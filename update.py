@@ -22,8 +22,8 @@ PLAY_STORE_XPATH = "/html/body/div[1]/div[4]/c-wiz/div/div[2]/div/div/main/c-wiz
 HEADERS = {"user-agent": USER_AGENT}
 
 
-with open("WEBHOOK.url", encoding="utf-8") as fp:
-    WEBHOOK = fp.read().strip()
+with open("WEBHOOK.url", encoding="utf-8") as webhook_fp:
+    WEBHOOK = webhook_fp.read().strip()
 
 
 def get_play_store_ver(play_store_url: str) -> str:
@@ -47,8 +47,8 @@ def get_app_ver(store: str, url: str) -> str:
 
 def is_new_ver(new_ver: str, current_ver: str) -> bool:
     for new_num, current_num in zip(new_ver.split("."), current_ver.split(".")):
-        if int(new_num) > int(current_num):
-            return True
+        if int(new_num) != int(current_num):
+            return int(new_num) > int(current_num)
     return False
 
 
