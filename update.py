@@ -9,15 +9,15 @@ import lxml.html
 
 STORE_URL = {
     "NA": {
-        "App Store": "http://itunes.apple.com/lookup?bundleId=com.aniplex.fategrandorder.en",
+        "App Store": "http://itunes.apple.com/lookup?bundleId=com.aniplex.fategrandorder.en&country=us",
         "Play Store": "https://play.google.com/store/apps/details?id=com.aniplex.fategrandorder.en",
     },
     "JP": {
-        "App Store": "http://itunes.apple.com/jp/lookup?bundleId=com.aniplex.fategrandorder",
+        "App Store": "http://itunes.apple.com/lookup?bundleId=com.aniplex.fategrandorder&country=jp",
         "Play Store": "https://play.google.com/store/apps/details?id=com.aniplex.fategrandorder",
     },
 }
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.146 Safari/537.36"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"
 PLAY_STORE_XPATH = "/html/body/div[1]/div[4]/c-wiz/div/div[2]/div/div/main/c-wiz[4]/div[1]/div[2]/div/div[4]/span/div/span"
 HEADERS = {"user-agent": USER_AGENT}
 
@@ -34,7 +34,7 @@ def get_play_store_ver(play_store_url: str) -> str:
 
 
 def get_app_store_ver(app_store_url: str) -> str:
-    app_store_response = httpx.get(app_store_url, headers=HEADERS)
+    app_store_response = httpx.get(app_store_url)
     return str(app_store_response.json()["results"][0]["version"])
 
 
