@@ -9,11 +9,11 @@ import lxml.html
 
 STORE_URL = {
     "NA": {
-        "App Store": "http://itunes.apple.com/lookup?bundleId=com.aniplex.fategrandorder.en&country=us",
+        "App Store": "https://itunes.apple.com/lookup?bundleId=com.aniplex.fategrandorder.en&country=us",
         "Play Store": "https://play.google.com/store/apps/details?id=com.aniplex.fategrandorder.en",
     },
     "JP": {
-        "App Store": "http://itunes.apple.com/lookup?bundleId=com.aniplex.fategrandorder&country=jp",
+        "App Store": "https://itunes.apple.com/lookup?bundleId=com.aniplex.fategrandorder&country=jp",
         "Play Store": "https://play.google.com/store/apps/details?id=com.aniplex.fategrandorder",
     },
 }
