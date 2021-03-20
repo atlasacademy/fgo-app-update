@@ -78,7 +78,7 @@ def main(webhook: str) -> None:
     save_data: Dict[Region, Dict[Store, str]] = defaultdict(dict)
 
     for region in [Region.NA, Region.JP]:
-        for store in [Store.PLAY_STORE, Store.APP_STORE]:
+        for store in [Store.APP_STORE]:
             old_ver = old_save_data[region][store]
             new_ver = get_app_ver(store, STORE_URL[region][store])
             if is_new_ver(new_ver, old_ver):
