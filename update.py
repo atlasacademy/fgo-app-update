@@ -1,4 +1,5 @@
 import json
+import time
 from collections import defaultdict
 from enum import Enum
 from pathlib import Path
@@ -32,7 +33,7 @@ AVATAR_URL = {
     Store.PLAY_STORE: "https://i.imgur.com/kN7NO37.png",  # From the PLay Store apk P5w.png
     Store.APP_STORE: "https://i.imgur.com/fTxPeCW.png",  # https://www.apple.com/app-store/
 }
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36"
 PLAY_STORE_XPATH = "/html/body/div[1]/div[4]/c-wiz/div/div[2]/div/div/main/c-wiz[4]/div[1]/div[2]/div/div[4]/span/div/span"
 APP_STORE_XPATH = "/html/body/div[1]/div[4]/main/div/section[4]/div[2]/div[1]/div/p"
 HEADERS = {"user-agent": USER_AGENT}
@@ -46,7 +47,7 @@ def get_website_ver(play_store_url: str, xpath: str) -> str:
 
 
 def get_app_store_ver(app_store_url: str) -> str:
-    app_store_response = httpx.get(app_store_url)
+    app_store_response = httpx.get(app_store_url + f"&time={int(time.time())}")
     api_version = str(app_store_response.json()["results"][0]["version"])
     app_store_site_url = str(app_store_response.json()["results"][0]["trackViewUrl"])
     app_store_site_url = app_store_site_url.split("?")[0]
