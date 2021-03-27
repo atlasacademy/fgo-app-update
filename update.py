@@ -34,24 +34,32 @@ AVATAR_URL = {
 }
 USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"
 PLAY_STORE_XPATH = "/html/body/div[1]/div[4]/c-wiz/div/div[2]/div/div/main/c-wiz[4]/div[1]/div[2]/div/div[4]/span/div/span"
+APP_STORE_XPATH = "/html/body/div[1]/div[4]/main/div/section[4]/div[2]/div[1]/div/p"
 HEADERS = {"user-agent": USER_AGENT}
 
 
-def get_play_store_ver(play_store_url: str) -> str:
-    play_store_response = httpx.get(play_store_url)
-    play_store_html = lxml.html.fromstring(play_store_response.text)
-    play_store_version: str = play_store_html.xpath(PLAY_STORE_XPATH)[0].text
-    return play_store_version
+def get_website_ver(play_store_url: str, xpath: str) -> str:
+    response = httpx.get(play_store_url)
+    site_html = lxml.html.fromstring(response.text)
+    version_string: str = site_html.xpath(xpath)[0].text
+    return version_string.replace("バージョン", "").replace("Version", "").strip()
 
 
 def get_app_store_ver(app_store_url: str) -> str:
     app_store_response = httpx.get(app_store_url)
-    return str(app_store_response.json()["results"][0]["version"])
+    api_version = str(app_store_response.json()["results"][0]["version"])
+    app_store_site_url = str(app_store_response.json()["results"][0]["trackViewUrl"])
+    app_store_site_url = app_store_site_url.split("?")[0]
+    app_store_version = get_website_ver(app_store_site_url, APP_STORE_XPATH)
+    if is_new_ver(api_version, app_store_version):
+        return api_version
+    else:
+        return app_store_version
 
 
 def get_app_ver(store: str, url: str) -> str:
     if store == Store.PLAY_STORE:
-        return get_play_store_ver(url)
+        return get_website_ver(url, PLAY_STORE_XPATH)
     else:
         return get_app_store_ver(url)
 
