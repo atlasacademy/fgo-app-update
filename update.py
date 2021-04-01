@@ -48,13 +48,15 @@ def get_website_ver(play_store_url: str, xpath: str) -> str:
 
 def get_app_store_ver(app_store_url: str) -> str:
     app_store_response = httpx.get(app_store_url + f"&time={int(time.time())}")
-    api_version = str(app_store_response.json()["results"][0]["version"])
-    app_store_site_url = str(app_store_response.json()["results"][0]["trackViewUrl"])
-    app_store_site_url = app_store_site_url.split("?")[0]
+    app_detail = app_store_response.json()["results"][0]
+    api_version = str(app_detail["version"])
+    app_store_site_url = str(app_detail["trackViewUrl"]).split("?")[0]
     app_store_version = get_website_ver(app_store_site_url, APP_STORE_XPATH)
     if is_new_ver(api_version, app_store_version):
         return api_version
     else:
+        if api_version != app_store_version:
+            print("App store website version is newer than api version")
         return app_store_version
 
 
