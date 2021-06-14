@@ -42,8 +42,11 @@ HEADERS = {"user-agent": USER_AGENT}
 def get_website_ver(play_store_url: str, xpath: str) -> str:
     response = httpx.get(play_store_url)
     site_html = lxml.html.fromstring(response.text)
-    version_string: str = site_html.xpath(xpath)[0].text
-    return version_string.replace("バージョン", "").replace("Version", "").strip()
+    try:
+        version_string: str = site_html.xpath(xpath)[0].text
+        return version_string.replace("バージョン", "").replace("Version", "").strip()
+    except:
+        return "2.0.0"
 
 
 def get_app_store_ver(app_store_url: str) -> str:
@@ -68,9 +71,12 @@ def get_app_ver(store: str, url: str) -> str:
 
 
 def is_new_ver(new_ver: str, current_ver: str) -> bool:
-    for new_num, current_num in zip(new_ver.split("."), current_ver.split(".")):
-        if int(new_num) != int(current_num):
-            return int(new_num) > int(current_num)
+    try:
+        for new_num, current_num in zip(new_ver.split("."), current_ver.split(".")):
+            if int(new_num) != int(current_num):
+                return int(new_num) > int(current_num)
+    except ValueError:
+        return False
     return False
 
 
@@ -97,7 +103,7 @@ def main(webhook: str) -> None:
                 print(message)
                 webhook_content = {
                     "content": message,
-                    "username": store,
+                    "username": store.value,
                     "avatar_url": AVATAR_URL[store],
                 }
                 httpx.post(webhook, data=webhook_content)
