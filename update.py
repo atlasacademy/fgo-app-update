@@ -72,9 +72,11 @@ def get_app_ver(store: str, url: str) -> str:
 
 def is_new_ver(new_ver: str, current_ver: str) -> bool:
     try:
-        for new_num, current_num in zip(new_ver.split("."), current_ver.split(".")):
-            if int(new_num) != int(current_num):
-                return int(new_num) > int(current_num)
+        new_nums = [int(num) for num in new_ver.split(".")]
+        current_nums = [int(num) for num in current_ver.split(".")]
+        for new_num, current_num in zip(new_nums, current_nums):
+            if new_num != current_num:
+                return new_num > current_num
     except ValueError:
         return False
     return False
