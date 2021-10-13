@@ -40,20 +40,22 @@ HEADERS = {"user-agent": USER_AGENT}
 
 
 def get_website_ver(play_store_url: str, xpath: str) -> str:
-    response = httpx.get(play_store_url)
+    response = httpx.get(play_store_url, follow_redirects=True)
     site_html = lxml.html.fromstring(response.text)
     try:
         version_string: str = site_html.xpath(xpath)[0].text
         return version_string.replace("バージョン", "").replace("Version", "").strip()
-    except:
+    except Exception:  # pylint: disable=broad-except
         return "2.0.0"
 
 
 def get_app_store_ver(app_store_url: str) -> str:
-    app_store_response = httpx.get(app_store_url + f"&time={int(time.time())}")
+    app_store_response = httpx.get(
+        app_store_url + f"&time={int(time.time())}", follow_redirects=True
+    )
     app_detail = app_store_response.json()["results"][0]
     api_version = str(app_detail["version"])
-    app_store_site_url = str(app_detail["trackViewUrl"]).split("?")[0]
+    app_store_site_url = str(app_detail["trackViewUrl"]).split("?", maxsplit=1)[0]
     app_store_version = get_website_ver(app_store_site_url, APP_STORE_XPATH)
     if is_new_ver(api_version, app_store_version):
         return api_version
@@ -108,12 +110,12 @@ def main(webhook: str) -> None:
                     "username": store.value,
                     "avatar_url": AVATAR_URL[store],
                 }
-                httpx.post(webhook, data=webhook_content)
+                httpx.post(webhook, data=webhook_content, follow_redirects=True)
                 save_data[region][store] = new_ver
             else:
                 save_data[region][store] = old_ver
 
-    with open(current_ver_path, "w") as fp:
+    with open(current_ver_path, "w", encoding="utf-8") as fp:
         json.dump(save_data, fp, indent=2)
 
 
