@@ -55,14 +55,15 @@ def get_app_store_ver(app_store_url: str) -> str:
     )
     app_detail = app_store_response.json()["results"][0]
     api_version = str(app_detail["version"])
-    app_store_site_url = str(app_detail["trackViewUrl"]).split("?", maxsplit=1)[0]
-    app_store_version = get_website_ver(app_store_site_url, APP_STORE_XPATH)
-    if is_new_ver(api_version, app_store_version):
-        return api_version
-    else:
-        if api_version != app_store_version:
-            print("App store website version is newer than api version")
-        return app_store_version
+    return api_version
+    # app_store_site_url = str(app_detail["trackViewUrl"]).split("?", maxsplit=1)[0]
+    # app_store_version = get_website_ver(app_store_site_url, APP_STORE_XPATH)
+    # if is_new_ver(api_version, app_store_version):
+    #     return api_version
+    # else:
+    #     if api_version != app_store_version:
+    #         print("App store website version is newer than api version")
+    #     return app_store_version
 
 
 def get_app_ver(store: str, url: str) -> str:
@@ -84,7 +85,7 @@ def is_new_ver(new_ver: str, current_ver: str) -> bool:
     return False
 
 
-def main(webhook: str) -> None:
+def main(webhook: dict[str, str]) -> None:
     current_ver_path = Path("current_ver.json")
     if current_ver_path.exists():
         old_save_data: Dict[str, Dict[str, str]] = json.loads(
@@ -110,7 +111,7 @@ def main(webhook: str) -> None:
                     "username": store.value,
                     "avatar_url": AVATAR_URL[store],
                 }
-                httpx.post(webhook, data=webhook_content, follow_redirects=True)
+                httpx.post(webhook[str(region)], data=webhook_content, follow_redirects=True)
                 save_data[region][store] = new_ver
             else:
                 save_data[region][store] = old_ver
@@ -121,5 +122,5 @@ def main(webhook: str) -> None:
 
 if __name__ == "__main__":
     with open("WEBHOOK.url", encoding="utf-8") as webhook_fp:
-        webhook_url = webhook_fp.read().strip()
+        webhook_url = json.load(webhook_fp)
     main(webhook_url)
